@@ -13,5 +13,6 @@ namespace DinnerMenuPostgreSQL.Context
         public DbSet<Product> Products { get; set; }
         public DbSet<Reservation> Reservations { get; set; }
         public DbSet<Review> Reviews { get; set; }
+
     }
 }
