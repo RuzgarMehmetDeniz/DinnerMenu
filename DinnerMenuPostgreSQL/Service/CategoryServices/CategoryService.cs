@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DinnerMenuPostgreSQL.Service.CategoryServices
 {
+
     public class CategoryService : ICategoryService
     {
         private readonly AppDbContext _context;
