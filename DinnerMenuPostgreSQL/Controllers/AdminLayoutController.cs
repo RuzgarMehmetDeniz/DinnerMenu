@@ -11,7 +11,6 @@ namespace DinnerMenuPostgreSQL.Controllers
         {
             _context = context;
         }
-
         public IActionResult Index()
         {
            ViewBag.categorycount = _context.Categories.Count();
