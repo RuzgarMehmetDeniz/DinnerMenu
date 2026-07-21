@@ -32,7 +32,11 @@ namespace DinnerMenuPostgreSQL.Service.DashboardServices
         }
         public async Task<int> GetTodayReservationCountAsync()
         {
-            return await _context.Reservations.CountAsync(x => x.ReservationDate.Date == DateTime.Today);
+            var todayUtc = DateTime.UtcNow.Date;
+            var tomorrowUtc = todayUtc.AddDays(1);
+
+            return await _context.Reservations
+                .CountAsync(x => x.ReservationDate >= todayUtc && x.ReservationDate < tomorrowUtc);
         }
 
         public async Task<List<ResultReservationDto>> GetTodayReservationListAsync()
