@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using DinnerMenuPostgreSQL.Dtos.CategoryDtos;
+using DinnerMenuPostgreSQL.Dtos.OrderDtos;
+using DinnerMenuPostgreSQL.Dtos.OrderItemDtos;
 using DinnerMenuPostgreSQL.Dtos.ProductDtos;
 using DinnerMenuPostgreSQL.Dtos.ReservationDtos;
 using DinnerMenuPostgreSQL.Dtos.ReviewDtos;
@@ -30,6 +32,15 @@ namespace DinnerMenuPostgreSQL.Mapping
             CreateMap<Review, CreateReviewDto>().ReverseMap();
             CreateMap<Review, UpdateReviewDto>().ReverseMap();
             CreateMap<Review, GetReviewByIdDto>().ReverseMap();
+
+
+            CreateMap<Order, ResultOrderDto>().ReverseMap();
+            CreateMap<Order, CreateOrderDto>().ReverseMap();
+            CreateMap<Order, UpdateOrderDto>().ReverseMap();
+            CreateMap<Order, GetOrderByIdDto>().ReverseMap();
+            CreateMap<OrderItem, GetOrderItemByIdDto>().ReverseMap();
+            CreateMap<OrderItem, CreateOrderItemDto>().ReverseMap();
+            CreateMap<OrderItem, ResultOrderItemDto>().ReverseMap();
         }
     }
 }

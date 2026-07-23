@@ -1,0 +1,674 @@
+﻿@model CreateOrderDto
+
+@{
+    ViewData["Title"] = "CreateOrder";
+    Layout = "~/Views/AdminLayout/Index.cshtml";
+    var products = ViewBag.Products as List<ProductSelectDto> ?? new List<ProductSelectDto>();
+}
+
+<style>
+    :root {
+        --accent: #e6a03c;
+        --accent-dark: #c8861e;
+        --accent-soft: rgba(230,160,60,0.10);
+        --accent-glow: rgba(230,160,60,0.22);
+        --green: #22c55e;
+        --green-soft: rgba(34,197,94,0.10);
+        --red: #ef4444;
+        --border: #eeebe5;
+        --muted: #9a9590;
+        --text: #1a1a1a;
+        --text2: #6b6460;
+        --radius: 14px;
+        --radius-sm: 9px;
+        --tr: all 0.22s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    .add-header {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 28px;
+    }
+
+    .back-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: 11px;
+        border: 1px solid var(--border);
+        background: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 17px;
+        color: var(--text2);
+        text-decoration: none;
+        transition: var(--tr);
+        flex-shrink: 0;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    }
+
+        .back-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent-dark);
+            background: var(--accent-soft);
+            transform: translateX(-2px);
+        }
+
+    .add-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 22px;
+        font-weight: 700;
+        color: var(--text);
+        margin: 0 0 3px;
+    }
+
+    .add-desc {
+        font-size: 13px;
+        color: var(--muted);
+        margin: 0;
+    }
+
+    .bc-bar {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        color: var(--muted);
+        margin-bottom: 22px;
+    }
+
+        .bc-bar a {
+            color: var(--muted);
+            text-decoration: none;
+        }
+
+            .bc-bar a:hover {
+                color: var(--accent-dark);
+            }
+
+    .bc-cur {
+        color: var(--text2);
+        font-weight: 600;
+    }
+
+    .add-layout {
+        display: grid;
+        grid-template-columns: 1fr 340px;
+        gap: 20px;
+        align-items: start;
+    }
+
+    .f-card {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        box-shadow: 0 2px 14px rgba(0,0,0,0.05);
+        overflow: hidden;
+        margin-bottom: 18px;
+    }
+
+        .f-card:last-child {
+            margin-bottom: 0;
+        }
+
+    .f-card-head {
+        padding: 18px 22px 15px;
+        border-bottom: 1px solid #f5f2ee;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .head-icon {
+        width: 34px;
+        height: 34px;
+        border-radius: 9px;
+        background: var(--accent-soft);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 15px;
+        color: var(--accent-dark);
+        flex-shrink: 0;
+    }
+
+    .head-title {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--text);
+        margin: 0 0 2px;
+    }
+
+    .head-sub {
+        font-size: 12px;
+        color: var(--muted);
+        margin: 0;
+    }
+
+    .f-card-body {
+        padding: 22px;
+    }
+
+    .fg {
+        margin-bottom: 20px;
+    }
+
+        .fg:last-child {
+            margin-bottom: 0;
+        }
+
+    .fl {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 7px;
+    }
+
+        .fl label {
+            font-size: 13px;
+            font-weight: 650;
+            color: var(--text2);
+        }
+
+    .lbl-req {
+        font-size: 11px;
+        color: var(--red);
+        font-weight: 600;
+    }
+
+    .lbl-opt {
+        font-size: 11px;
+        color: var(--muted);
+        background: #f5f2ee;
+        padding: 2px 7px;
+        border-radius: 10px;
+        font-weight: 500;
+    }
+
+    .fi-wrap {
+        position: relative;
+    }
+
+        .fi-wrap .fi-ico {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 15px;
+            color: #c5bfb9;
+            pointer-events: none;
+            transition: color 0.2s;
+        }
+
+        .fi-wrap:focus-within .fi-ico {
+            color: var(--accent-dark);
+        }
+
+    .f-input {
+        width: 100%;
+        padding: 11px 14px;
+        border: 1.5px solid var(--border);
+        border-radius: var(--radius-sm);
+        font-size: 14px;
+        color: var(--text);
+        background: #fdfcfb;
+        outline: none;
+        transition: var(--tr);
+        box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+    }
+
+    .f-input-pl {
+        padding-left: 40px;
+    }
+
+    .f-input:hover {
+        border-color: #d8d2c8;
+        background: #fff;
+    }
+
+    .f-input:focus {
+        border-color: var(--accent);
+        background: #fff;
+        box-shadow: 0 0 0 3.5px var(--accent-glow);
+    }
+
+    .f-textarea {
+        min-height: 90px;
+        resize: vertical;
+    }
+
+    .f-err {
+        margin-top: 6px;
+        font-size: 12px;
+        color: var(--red);
+        display: none;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .fg.is-invalid .f-input {
+        border-color: var(--red);
+    }
+
+    .fg.is-invalid .f-err {
+        display: flex;
+    }
+
+    /* Order items rows */
+    .item-row {
+        display: grid;
+        grid-template-columns: 1fr 90px 32px;
+        gap: 10px;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+
+    .item-select, .item-qty {
+        padding: 10px 12px;
+        border: 1.5px solid var(--border);
+        border-radius: var(--radius-sm);
+        font-size: 13.5px;
+        background: #fdfcfb;
+        outline: none;
+        transition: var(--tr);
+    }
+
+        .item-select:focus, .item-qty:focus {
+            border-color: var(--accent);
+            background: #fff;
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+
+    .item-remove {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        border: 1px solid #fecaca;
+        background: #fff5f5;
+        color: var(--red);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: var(--tr);
+        font-size: 13px;
+    }
+
+        .item-remove:hover {
+            background: var(--red);
+            color: #fff;
+        }
+
+    .btn-add-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: var(--accent-soft);
+        color: var(--accent-dark);
+        border: 1px dashed var(--accent);
+        padding: 9px 16px;
+        border-radius: var(--radius-sm);
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--tr);
+        width: 100%;
+        justify-content: center;
+    }
+
+        .btn-add-item:hover {
+            background: var(--accent);
+            color: #fff;
+        }
+
+    .item-line-total {
+        font-size: 11.5px;
+        color: var(--muted);
+        margin-top: -4px;
+        margin-bottom: 10px;
+    }
+
+    /* SUBMIT CARD */
+    .sub-card {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        box-shadow: 0 2px 14px rgba(0,0,0,0.05);
+        padding: 18px;
+        margin-bottom: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        font-size: 13px;
+        color: var(--text2);
+        padding: 4px 0;
+    }
+
+    .summary-total {
+        display: flex;
+        justify-content: space-between;
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--text);
+        padding-top: 10px;
+        border-top: 1px solid var(--border);
+        margin-top: 4px;
+    }
+
+    .btn-sub {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        background: linear-gradient(135deg,var(--accent),var(--accent-dark));
+        color: #fff;
+        border: none;
+        padding: 13px 22px;
+        border-radius: 11px;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: var(--tr);
+        box-shadow: 0 4px 16px rgba(230,160,60,0.30);
+    }
+
+        .btn-sub:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(230,160,60,0.42);
+        }
+
+        .btn-sub.loading {
+            pointer-events: none;
+            opacity: 0.85;
+        }
+
+    .btn-back {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        background: transparent;
+        color: var(--text2);
+        border: 1.5px solid var(--border);
+        padding: 11px 22px;
+        border-radius: 11px;
+        font-size: 13.5px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--tr);
+        text-decoration: none;
+    }
+
+        .btn-back:hover {
+            border-color: #d8d2c8;
+            background: #fdfcfb;
+            color: var(--text);
+        }
+
+    .tips-card {
+        background: linear-gradient(135deg,#fffbf3,#fff8ec);
+        border: 1px solid #fde8c0;
+        border-radius: var(--radius);
+        padding: 18px 20px;
+    }
+
+    .tips-title {
+        font-size: 12.5px;
+        font-weight: 700;
+        color: var(--accent-dark);
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .tip {
+        display: flex;
+        gap: 8px;
+        font-size: 12px;
+        color: #8a6830;
+        line-height: 1.5;
+        margin-bottom: 7px;
+    }
+
+        .tip:last-child {
+            margin-bottom: 0;
+        }
+
+        .tip i {
+            color: var(--accent);
+            font-size: 12px;
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+
+    @@keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    .spin {
+        animation: spin 0.8s linear infinite;
+    }
+
+    @@media (max-width: 991.98px) {
+        .add-layout {
+            grid-template-columns: 1fr;
+        }
+
+        .right-col {
+            order: -1;
+        }
+    }
+</style>
+
+<div class="bc-bar">
+    <a href="/Admin/Dashboard"><i class="bi bi-house-fill" style="font-size:11px;"></i></a>
+    <span style="opacity:.4;"><i class="bi bi-chevron-right" style="font-size:10px;"></i></span>
+    <a href="/Order/OrderList">Sipariş Yönetimi</a>
+    <span style="opacity:.4;"><i class="bi bi-chevron-right" style="font-size:10px;"></i></span>
+    <span class="bc-cur">Yeni Sipariş</span>
+</div>
+
+<div class="add-header">
+    <a href="/Order/OrderList" class="back-btn" title="Geri"><i class="bi bi-arrow-left"></i></a>
+    <div>
+        <h1 class="add-title">
+            <i class="bi bi-receipt me-2" style="color:var(--accent);font-size:19px;vertical-align:middle;"></i>
+            Yeni Sipariş Oluştur
+        </h1>
+        <p class="add-desc">Masa bilgilerini girin ve ürünleri ekleyin.</p>
+    </div>
+</div>
+
+<form id="addForm" asp-action="CreateOrder" asp-controller="Order" method="post" novalidate>
+    @Html.AntiForgeryToken()
+
+    <div class="add-layout">
+
+        <!-- LEFT COLUMN -->
+        <div>
+            <!-- General Info -->
+            <div class="f-card">
+                <div class="f-card-head">
+                    <div class="head-icon"><i class="bi bi-info-circle-fill"></i></div>
+                    <div>
+                        <div class="head-title">Sipariş Bilgileri</div>
+                        <div class="head-sub">Masa numarası ve müşteri bilgisi</div>
+                    </div>
+                </div>
+                <div class="f-card-body">
+                    <div class="fg" id="fg-table">
+                        <div class="fl">
+                            <label for="TableNumber">Masa Numarası</label>
+                            <span class="lbl-req">* Zorunlu</span>
+                        </div>
+                        <div class="fi-wrap">
+                            <i class="bi bi-grid-3x3-gap-fill fi-ico"></i>
+                            <input type="number" id="TableNumber" name="TableNumber" asp-for="TableNumber"
+                                   class="f-input f-input-pl" placeholder="Örn: 5" min="1" />
+                        </div>
+                        <div class="f-err"><i class="bi bi-exclamation-circle-fill"></i> Masa numarası girilmelidir.</div>
+                    </div>
+
+                    <div class="fg">
+                        <div class="fl">
+                            <label for="CustomerName">Müşteri Adı</label>
+                            <span class="lbl-opt">Opsiyonel</span>
+                        </div>
+                        <div class="fi-wrap">
+                            <i class="bi bi-person-fill fi-ico"></i>
+                            <input type="text" id="CustomerName" name="CustomerName" asp-for="CustomerName"
+                                   class="f-input f-input-pl" placeholder="Müşteri adı" autocomplete="off" />
+                        </div>
+                    </div>
+
+                    <div class="fg">
+                        <div class="fl"><label for="Description">Açıklama / Not</label></div>
+                        <textarea id="Description" name="Description" asp-for="Description"
+                                  class="f-input f-textarea" placeholder="Sipariş ile ilgili özel not..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Items -->
+            <div class="f-card">
+                <div class="f-card-head">
+                    <div class="head-icon"><i class="bi bi-basket-fill"></i></div>
+                    <div>
+                        <div class="head-title">Sipariş Ürünleri</div>
+                        <div class="head-sub">Ürün seçin ve adetlerini girin</div>
+                    </div>
+                </div>
+                <div class="f-card-body">
+                    <div id="itemsContainer"></div>
+                    <button type="button" class="btn-add-item" onclick="addItemRow()">
+                        <i class="bi bi-plus-lg"></i> Ürün Ekle
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT COLUMN -->
+        <div class="right-col" style="display:flex;flex-direction:column;gap:16px;">
+            <div class="sub-card">
+                <div class="summary-row"><span>Ürün Sayısı</span><span id="sumCount">0</span></div>
+                <div class="summary-total"><span>Toplam</span><span id="sumTotal">₺0,00</span></div>
+                <button type="submit" class="btn-sub" id="submitBtn">
+                    <i class="bi bi-check-circle-fill"></i> Siparişi Oluştur
+                </button>
+                <a href="/Order/OrderList" class="btn-back">
+                    <i class="bi bi-x-lg"></i> Vazgeç
+                </a>
+            </div>
+
+            <div class="tips-card">
+                <div class="tips-title"><i class="bi bi-lightbulb-fill"></i> İpuçları</div>
+                <div class="tip"><i class="bi bi-check-circle-fill"></i>En az bir ürün eklemelisiniz.</div>
+                <div class="tip"><i class="bi bi-check-circle-fill"></i>Fiyatlar sipariş anındaki ürün fiyatı üzerinden hesaplanır.</div>
+                <div class="tip"><i class="bi bi-check-circle-fill"></i>Sipariş oluşturulduğunda durum otomatik "Beklemede" olur.</div>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    <script>
+        const products = @Html.Raw(Json.Serialize(products));
+        let itemIndex = 0;
+
+        function addItemRow() {
+            const container = document.getElementById('itemsContainer');
+            const idx = itemIndex++;
+
+            const wrap = document.createElement('div');
+            wrap.className = 'item-row-wrap';
+            wrap.dataset.idx = idx;
+
+            let options = '<option value="">Ürün seçin...</option>';
+            products.forEach(p => {
+                options += `<option value="${p.productId}" data-price="${p.price}">${p.productName} — ${formatCurrency(p.price)}</option>`;
+            });
+
+            wrap.innerHTML = `
+                <div class="item-row">
+                    <select class="item-select" name="OrderItems[${idx}].ProductId" onchange="updateSummary()" required>
+                        ${options}
+                    </select>
+                    <input type="number" class="item-qty" name="OrderItems[${idx}].Quantity" value="1" min="1" onchange="updateSummary()" oninput="updateSummary()" />
+                    <div class="item-remove" onclick="removeItemRow(this)"><i class="bi bi-trash3-fill"></i></div>
+                </div>
+                <div class="item-line-total">Ara toplam: <span class="line-total">₺0,00</span></div>
+            `;
+
+            container.appendChild(wrap);
+            updateSummary();
+        }
+
+        function removeItemRow(btn) {
+            btn.closest('.item-row-wrap').remove();
+            updateSummary();
+        }
+
+        function formatCurrency(val) {
+            return new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY' }).format(val);
+        }
+
+        function updateSummary() {
+            const rows = document.querySelectorAll('#itemsContainer .item-row-wrap');
+            let total = 0;
+            let count = 0;
+
+            rows.forEach(row => {
+                const select = row.querySelector('.item-select');
+                const qtyInput = row.querySelector('.item-qty');
+                const lineTotalEl = row.querySelector('.line-total');
+
+                const selectedOption = select.options[select.selectedIndex];
+                const price = selectedOption ? parseFloat(selectedOption.dataset.price || 0) : 0;
+                const qty = parseInt(qtyInput.value || 0);
+                const lineTotal = price * qty;
+
+                lineTotalEl.textContent = formatCurrency(lineTotal);
+                total += lineTotal;
+                if (select.value) count++;
+            });
+
+            document.getElementById('sumCount').textContent = count;
+            document.getElementById('sumTotal').textContent = formatCurrency(total);
+        }
+
+        // Start with one row
+        addItemRow();
+
+        document.getElementById('addForm').addEventListener('submit', function (e) {
+            const tableNumber = document.getElementById('TableNumber').value;
+            if (!tableNumber) {
+                e.preventDefault();
+                document.getElementById('fg-table').classList.add('is-invalid');
+                document.getElementById('TableNumber').focus();
+                return;
+            }
+
+            const rows = document.querySelectorAll('#itemsContainer .item-row-wrap');
+            if (rows.length === 0) {
+                e.preventDefault();
+                alert('En az bir ürün eklemelisiniz.');
+                return;
+            }
+
+            const btn = document.getElementById('submitBtn');
+            btn.classList.add('loading');
+            btn.innerHTML = '<i class="bi bi-arrow-repeat spin"></i> Kaydediliyor...';
+        });
+    </script>
+}

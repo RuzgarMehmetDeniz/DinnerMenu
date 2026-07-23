@@ -2,6 +2,7 @@ using DinnerMenuPostgreSQL.Context;
 using DinnerMenuPostgreSQL.Service.CategoryServices;
 using DinnerMenuPostgreSQL.Service.ChartServices;
 using DinnerMenuPostgreSQL.Service.DashboardServices;
+using DinnerMenuPostgreSQL.Service.OrderServices;
 using DinnerMenuPostgreSQL.Service.ProductServices;
 using DinnerMenuPostgreSQL.Service.ReservationServices;
 using DinnerMenuPostgreSQL.Service.ReviewServices;
@@ -22,6 +23,7 @@ builder.Services.AddScoped<IReservationService, ReservationService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<IChartService, ChartService>();
 builder.Services.AddScoped<IReviewService, ReviewService>();
+builder.Services.AddScoped<IOrderService, OrderService>();
 
 
 // Add services to the container.

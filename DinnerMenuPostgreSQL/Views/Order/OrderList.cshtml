@@ -1,0 +1,853 @@
+﻿@using DinnerMenuPostgreSQL.Dtos.OrderDtos
+@model PagedResultDto<ResultOrderDto>
+
+@{
+    ViewData["Title"] = "OrderList";
+    Layout = "~/Views/AdminLayout/Index.cshtml";
+
+    int? selYear = ViewBag.SelectedYear;
+    int? selMonth = ViewBag.SelectedMonth;
+    int currentYear = DateTime.Now.Year;
+
+    var monthNames = new[] {
+        "Ocak","Şubat","Mart","Nisan","Mayıs","Haziran",
+        "Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"
+    };
+}
+
+<style>
+    :root {
+        --ord-accent: #e6a03c;
+        --ord-accent-soft: rgba(230, 160, 60, 0.10);
+        --ord-accent-dark: #c8861e;
+        --ord-green: #22c55e;
+        --ord-green-soft: rgba(34, 197, 94, 0.10);
+        --ord-red: #ef4444;
+        --ord-red-soft: rgba(239, 68, 68, 0.10);
+        --ord-blue: #3b82f6;
+        --ord-blue-soft: rgba(59, 130, 246, 0.10);
+        --ord-border: #f0ede8;
+        --ord-row-hover: #fdfcfa;
+        --ord-radius: 12px;
+    }
+
+    .ord-page-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 28px;
+        flex-wrap: wrap;
+    }
+
+    .ord-page-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 22px;
+        font-weight: 700;
+        color: #1a1a1a;
+        margin: 0 0 4px;
+        line-height: 1.2;
+    }
+
+    .ord-page-desc {
+        font-size: 13.5px;
+        color: #888;
+        margin: 0;
+    }
+
+    .btn-add-ord {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: linear-gradient(135deg, var(--ord-accent), var(--ord-accent-dark));
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 10px;
+        font-size: 13.5px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 14px rgba(230,160,60,0.32);
+        white-space: nowrap;
+    }
+
+        .btn-add-ord:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(230,160,60,0.42);
+            color: #fff;
+        }
+
+    /* Stats */
+    .ord-stats-strip {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 22px;
+        flex-wrap: wrap;
+    }
+
+    .stat-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: #fff;
+        border: 1px solid var(--ord-border);
+        border-radius: 30px;
+        padding: 7px 16px 7px 10px;
+        font-size: 13px;
+        font-weight: 500;
+        color: #555;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    }
+
+        .stat-pill .pill-icon {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        .stat-pill .pill-count {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+
+    /* Toolbar */
+    .ord-toolbar {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 16px;
+        flex-wrap: wrap;
+    }
+
+    .ord-search-wrap {
+        position: relative;
+        flex: 1;
+        min-width: 200px;
+        max-width: 320px;
+    }
+
+        .ord-search-wrap .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #aaa;
+            font-size: 15px;
+            pointer-events: none;
+        }
+
+    .ord-search-input {
+        width: 100%;
+        padding: 9px 12px 9px 36px;
+        border: 1px solid var(--ord-border);
+        border-radius: 10px;
+        font-size: 13.5px;
+        background: #fff;
+        color: #1a1a1a;
+        outline: none;
+        transition: all 0.2s;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    }
+
+        .ord-search-input:focus {
+            border-color: var(--ord-accent);
+            box-shadow: 0 0 0 3px rgba(230,160,60,0.12);
+        }
+
+    .ord-filter-select {
+        padding: 9px 14px;
+        border: 1px solid var(--ord-border);
+        border-radius: 10px;
+        font-size: 13px;
+        background: #fff;
+        color: #555;
+        outline: none;
+        cursor: pointer;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    }
+
+    .ord-result-count {
+        margin-left: auto;
+        font-size: 12.5px;
+        color: #aaa;
+        font-weight: 500;
+        white-space: nowrap;
+    }
+
+    /* Table */
+    .ord-table-card {
+        background: #fff;
+        border: 1px solid var(--ord-border);
+        border-radius: var(--ord-radius);
+        overflow: hidden;
+        box-shadow: 0 2px 16px rgba(0,0,0,0.05);
+    }
+
+    .ord-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-family: 'DM Sans', sans-serif;
+    }
+
+        .ord-table thead tr {
+            background: #fafaf8;
+            border-bottom: 2px solid var(--ord-border);
+        }
+
+        .ord-table thead th {
+            padding: 13px 16px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            color: #aaa;
+            text-align: left;
+            white-space: nowrap;
+        }
+
+            .ord-table thead th.col-actions {
+                width: 210px;
+                text-align: center;
+            }
+
+        .ord-table tbody tr {
+            border-bottom: 1px solid #f5f2ee;
+            transition: background 0.17s ease;
+        }
+
+            .ord-table tbody tr:last-child {
+                border-bottom: none;
+            }
+
+            .ord-table tbody tr:hover {
+                background: var(--ord-row-hover);
+            }
+
+        .ord-table tbody td {
+            padding: 14px 16px;
+            vertical-align: middle;
+            font-size: 13.5px;
+            color: #333;
+        }
+
+    .ord-table-name {
+        font-size: 14px;
+        font-weight: 600;
+        color: #1a1a1a;
+    }
+
+    .ord-id-sub {
+        font-size: 11.5px;
+        color: #bbb;
+        margin-top: 2px;
+    }
+
+    .ord-total {
+        font-weight: 700;
+        color: #1a1a1a;
+    }
+
+    /* Status badges */
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 11px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+        .status-badge .badge-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+        }
+
+        .status-badge.waiting {
+            background: #f3f0ff;
+            color: #7c3aed;
+            border: 1px solid rgba(124,58,237,0.2);
+        }
+
+            .status-badge.waiting .badge-dot {
+                background: #7c3aed;
+            }
+
+        .status-badge.preparing {
+            background: var(--ord-blue-soft);
+            color: #2563eb;
+            border: 1px solid rgba(59,130,246,0.2);
+        }
+
+            .status-badge.preparing .badge-dot {
+                background: var(--ord-blue);
+            }
+
+        .status-badge.served {
+            background: var(--ord-green-soft);
+            color: #16a34a;
+            border: 1px solid rgba(34,197,94,0.2);
+        }
+
+            .status-badge.served .badge-dot {
+                background: var(--ord-green);
+            }
+
+        .status-badge.cancelled {
+            background: var(--ord-red-soft);
+            color: #dc2626;
+            border: 1px solid rgba(239,68,68,0.2);
+        }
+
+            .status-badge.cancelled .badge-dot {
+                background: var(--ord-red);
+            }
+
+    /* Actions */
+    .action-group {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        flex-wrap: wrap;
+    }
+
+    .btn-action {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        border: 1px solid transparent;
+        font-size: 14px;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.18s ease;
+        position: relative;
+    }
+
+        .btn-action.edit {
+            background: #fff7ed;
+            color: var(--ord-accent-dark);
+            border-color: #fde8c0;
+        }
+
+            .btn-action.edit:hover {
+                background: var(--ord-accent);
+                color: #fff;
+                transform: translateY(-1px);
+            }
+
+        .btn-action.delete {
+            background: #fff5f5;
+            color: var(--ord-red);
+            border-color: #fecaca;
+        }
+
+            .btn-action.delete:hover {
+                background: var(--ord-red);
+                color: #fff;
+                transform: translateY(-1px);
+            }
+
+        .btn-action.prep {
+            background: var(--ord-blue-soft);
+            color: #2563eb;
+            border-color: rgba(59,130,246,0.25);
+        }
+
+            .btn-action.prep:hover {
+                background: var(--ord-blue);
+                color: #fff;
+                transform: translateY(-1px);
+            }
+
+        .btn-action.served {
+            background: var(--ord-green-soft);
+            color: #16a34a;
+            border-color: rgba(34,197,94,0.25);
+        }
+
+            .btn-action.served:hover {
+                background: var(--ord-green);
+                color: #fff;
+                transform: translateY(-1px);
+            }
+
+        .btn-action.cancel {
+            background: var(--ord-red-soft);
+            color: var(--ord-red);
+            border-color: rgba(239,68,68,0.25);
+        }
+
+            .btn-action.cancel:hover {
+                background: var(--ord-red);
+                color: #fff;
+                transform: translateY(-1px);
+            }
+
+        .btn-action::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: calc(100% + 6px);
+            left: 50%;
+            transform: translateX(-50%) scale(0.85);
+            background: #1a1a1a;
+            color: #fff;
+            font-size: 11px;
+            font-weight: 500;
+            white-space: nowrap;
+            padding: 4px 8px;
+            border-radius: 6px;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.15s ease;
+        }
+
+        .btn-action:hover::after {
+            opacity: 1;
+            transform: translateX(-50%) scale(1);
+        }
+
+    /* Empty state */
+    .ord-empty {
+        padding: 64px 24px;
+        text-align: center;
+    }
+
+    .ord-empty-icon {
+        width: 72px;
+        height: 72px;
+        background: #f5f2ee;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+        color: #ccc;
+        margin: 0 auto 18px;
+    }
+
+    .ord-empty-title {
+        font-size: 16px;
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 6px;
+    }
+
+    .ord-empty-desc {
+        font-size: 13.5px;
+        color: #aaa;
+        margin-bottom: 20px;
+    }
+
+    /* Pagination */
+    .ord-pagination {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 20px;
+        border-top: 1px solid var(--ord-border);
+        background: #fafaf8;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .pag-info {
+        font-size: 12.5px;
+        color: #aaa;
+        font-weight: 500;
+    }
+
+        .pag-info strong {
+            color: #555;
+        }
+
+    .pag-controls {
+        display: flex;
+        gap: 4px;
+        align-items: center;
+    }
+
+    .pag-btn {
+        min-width: 32px;
+        height: 32px;
+        padding: 0 8px;
+        border: 1px solid var(--ord-border);
+        background: #fff;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 13px;
+        cursor: pointer;
+        color: #555;
+        transition: all 0.15s;
+        font-weight: 500;
+        text-decoration: none;
+    }
+
+        .pag-btn:hover {
+            border-color: var(--ord-accent);
+            color: var(--ord-accent-dark);
+            background: var(--ord-accent-soft);
+        }
+
+        .pag-btn.active {
+            background: var(--ord-accent);
+            border-color: var(--ord-accent);
+            color: #fff;
+            box-shadow: 0 2px 8px rgba(230,160,60,0.35);
+        }
+
+            .pag-btn.active:hover {
+                color: #fff;
+            }
+
+        .pag-btn.disabled {
+            opacity: 0.35;
+            pointer-events: none;
+            cursor: not-allowed;
+        }
+
+    .pag-dots {
+        padding: 0 4px;
+        color: #ccc;
+        font-size: 13px;
+    }
+
+    @@media (max-width: 767.98px) {
+        .ord-page-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .ord-result-count {
+            display: none;
+        }
+
+        .ord-table thead th, .ord-table tbody td {
+            padding: 12px 10px;
+        }
+
+        .ord-pagination {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    }
+</style>
+
+<!-- PAGE HEADER -->
+<div class="ord-page-header">
+    <div>
+        <h1 class="ord-page-title">
+            <i class="bi bi-receipt me-2" style="color:var(--ord-accent);font-size:20px;vertical-align:middle;"></i>
+            Sipariş Yönetimi
+        </h1>
+        <p class="ord-page-desc">Gelen siparişleri görüntüleyin, durumlarını güncelleyin.</p>
+    </div>
+    <a href="/Order/CreateOrder" class="btn-add-ord">
+        <i class="bi bi-plus-lg"></i>
+        Yeni Sipariş Oluştur
+    </a>
+</div>
+
+<!-- STATS -->
+@{
+    // Not: Bu üç sayaç (Beklemede/Hazırlanıyor/Servis Edildi) sadece MEVCUT SAYFADAKİ kayıtlara göre.
+    // Toplam sayaç ise Model.TotalCount ile GENEL (filtreye göre) toplamı gösteriyor.
+    var pageTotal = Model?.Items.Count ?? 0;
+    var waitingCount = Model?.Items.Count(o => o.Status == "Beklemede") ?? 0;
+    var preparingCount = Model?.Items.Count(o => o.Status == "Hazırlanıyor") ?? 0;
+    var servedCount = Model?.Items.Count(o => o.Status == "Servis Edildi") ?? 0;
+    var totalCount = Model?.TotalCount ?? 0;
+}
+
+<div class="ord-stats-strip">
+    <div class="stat-pill">
+        <div class="pill-icon" style="background:#f5f2ee;"><i class="bi bi-grid-1x2-fill" style="color:#aaa;"></i></div>
+        <span>Toplam</span>
+        <span class="pill-count">@totalCount</span>
+    </div>
+    <div class="stat-pill">
+        <div class="pill-icon" style="background:#f3f0ff;"><i class="bi bi-hourglass-split" style="color:#7c3aed;"></i></div>
+        <span>Beklemede</span>
+        <span class="pill-count" style="color:#7c3aed;">@waitingCount</span>
+    </div>
+    <div class="stat-pill">
+        <div class="pill-icon" style="background:var(--ord-blue-soft);"><i class="bi bi-fire" style="color:var(--ord-blue);"></i></div>
+        <span>Hazırlanıyor</span>
+        <span class="pill-count" style="color:#2563eb;">@preparingCount</span>
+    </div>
+    <div class="stat-pill">
+        <div class="pill-icon" style="background:var(--ord-green-soft);"><i class="bi bi-check-circle-fill" style="color:var(--ord-green);"></i></div>
+        <span>Servis Edildi</span>
+        <span class="pill-count" style="color:#16a34a;">@servedCount</span>
+    </div>
+</div>
+
+<!-- TOOLBAR -->
+<div class="ord-toolbar">
+    <div class="ord-search-wrap">
+        <i class="bi bi-search search-icon"></i>
+        <input type="text" class="ord-search-input" id="ordSearchInput" placeholder="Müşteri veya masa ara..." oninput="filterOrders()" />
+    </div>
+
+    <!-- AY FİLTRESİ -->
+    <select class="ord-filter-select" id="ordMonthFilter" onchange="goToMonth()">
+        <option value="">Tüm Aylar</option>
+        @for (int m = 1; m <= 12; m++)
+        {
+            if (selMonth == m)
+            {
+                <option value="@m" selected>@monthNames[m - 1]</option>
+            }
+            else
+            {
+                <option value="@m">@monthNames[m - 1]</option>
+            }
+        }
+    </select>
+
+    <!-- YIL FİLTRESİ -->
+    <select class="ord-filter-select" id="ordYearFilter" onchange="goToMonth()">
+        @for (int y = currentYear - 1; y <= currentYear + 1; y++)
+        {
+            if (selYear == y)
+            {
+                <option value="@y" selected>@y</option>
+            }
+            else
+            {
+                <option value="@y">@y</option>
+            }
+        }
+    </select>
+
+    <select class="ord-filter-select" id="ordStatusFilter" onchange="filterOrders()">
+        <option value="all">Tüm Durumlar</option>
+        <option value="Beklemede">Beklemede</option>
+        <option value="Hazırlanıyor">Hazırlanıyor</option>
+        <option value="Servis Edildi">Servis Edildi</option>
+        <option value="İptal Edildi">İptal Edildi</option>
+    </select>
+
+    <span class="ord-result-count" id="ordResultCount">@pageTotal kayıt gösteriliyor</span>
+</div>
+
+<!-- TABLE -->
+<div class="ord-table-card">
+    @if (Model == null || !Model.Items.Any())
+    {
+        <div class="ord-empty">
+            <div class="ord-empty-icon"><i class="bi bi-receipt"></i></div>
+            <div class="ord-empty-title">Bu ay için sipariş bulunamadı</div>
+            <p class="ord-empty-desc">Seçili ay/yıl için henüz sipariş girilmemiş.</p>
+            <a href="/Order/CreateOrder" class="btn-add-ord" style="display:inline-flex;">
+                <i class="bi bi-plus-lg"></i> Yeni Sipariş Oluştur
+            </a>
+        </div>
+    }
+    else
+    {
+        <div style="overflow-x:auto;">
+            <table class="ord-table" id="ordTable">
+                <thead>
+                    <tr>
+                        <th>Masa</th>
+                        <th>Müşteri</th>
+                        <th>Tarih</th>
+                        <th>Tutar</th>
+                        <th>Durum</th>
+                        <th class="col-actions">İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody id="ordTableBody">
+                    @foreach (var order in Model.Items)
+                    {
+                        var statusClass = order.Status switch
+                        {
+                            "Hazırlanıyor" => "preparing",
+                            "Servis Edildi" => "served",
+                            "İptal Edildi" => "cancelled",
+                            _ => "waiting"
+                        };
+
+                        <tr data-customer="@order.CustomerName.ToLower()" data-table="@order.TableNumber" data-status="@order.Status">
+                            <td>
+                                <div class="ord-table-name">Masa @order.TableNumber</div>
+                                <div class="ord-id-sub">#@order.OrderId</div>
+                            </td>
+                            <td>@order.CustomerName</td>
+                            <td>@order.OrderDate.ToString("dd.MM.yyyy HH:mm")</td>
+                            <td class="ord-total">@order.TotalPrice.ToString("C2")</td>
+                            <td>
+                                <span class="status-badge @statusClass">
+                                    <span class="badge-dot"></span>
+                                    @order.Status
+                                </span>
+                            </td>
+                            <td>
+                                <div class="action-group">
+                                    <a href="/Order/UpdateOrder/@order.OrderId" class="btn-action edit" data-tooltip="Düzenle">
+                                        <i class="bi bi-pencil-fill"></i>
+                                    </a>
+                                    <a href="/Order/ChangeStatusToPreparing/@order.OrderId" class="btn-action prep" data-tooltip="Hazırlanıyor">
+                                        <i class="bi bi-fire"></i>
+                                    </a>
+                                    <a href="/Order/ChangeStatusToServed/@order.OrderId" class="btn-action served" data-tooltip="Servis Edildi">
+                                        <i class="bi bi-check-lg"></i>
+                                    </a>
+                                    <a href="/Order/ChangeStatusToCancel/@order.OrderId" class="btn-action cancel" data-tooltip="İptal Et">
+                                        <i class="bi bi-x-lg"></i>
+                                    </a>
+                                    <button class="btn-action delete" data-tooltip="Sil" onclick="confirmDelete(@order.OrderId, 'Masa @order.TableNumber')">
+                                        <i class="bi bi-trash3-fill"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- PAGINATION -->
+        <div class="ord-pagination">
+            <div class="pag-info">
+                Toplam <strong>@Model.TotalCount</strong> sipariş &middot;
+                Sayfa <strong>@Model.PageNumber</strong> / <strong>@Model.TotalPages</strong>
+            </div>
+            <div class="pag-controls">
+                <a asp-action="OrderList"
+                   asp-route-page="@(Model.PageNumber - 1)"
+                   asp-route-year="@selYear"
+                   asp-route-month="@selMonth"
+                   class="pag-btn @(!Model.HasPreviousPage ? "disabled" : "")">
+                    <i class="bi bi-chevron-left"></i>
+                </a>
+
+                @{
+                    int startPage = Math.Max(1, Model.PageNumber - 2);
+                    int endPage = Math.Min(Model.TotalPages, Model.PageNumber + 2);
+                }
+
+                @if (startPage > 1)
+                {
+                    <a asp-action="OrderList" asp-route-page="1" asp-route-year="@selYear" asp-route-month="@selMonth" class="pag-btn">1</a>
+                    if (startPage > 2)
+                    {
+                        <span class="pag-dots">...</span>
+                    }
+                }
+
+                @for (int p = startPage; p <= endPage; p++)
+                {
+                    <a asp-action="OrderList"
+                       asp-route-page="@p"
+                       asp-route-year="@selYear"
+                       asp-route-month="@selMonth"
+                       class="pag-btn @(p == Model.PageNumber ? "active" : "")">@p</a>
+                }
+
+                @if (endPage < Model.TotalPages)
+                {
+                    if (endPage < Model.TotalPages - 1)
+                    {
+                        <span class="pag-dots">...</span>
+                    }
+                    <a asp-action="OrderList" asp-route-page="@Model.TotalPages" asp-route-year="@selYear" asp-route-month="@selMonth" class="pag-btn">@Model.TotalPages</a>
+                }
+
+                <a asp-action="OrderList"
+                   asp-route-page="@(Model.PageNumber + 1)"
+                   asp-route-year="@selYear"
+                   asp-route-month="@selMonth"
+                   class="pag-btn @(!Model.HasNextPage ? "disabled" : "")">
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+            </div>
+        </div>
+    }
+</div>
+
+<!-- DELETE MODAL -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width:400px;">
+        <div class="modal-content" style="border-radius:16px;border:1px solid #f0ede8;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.12);">
+            <div class="modal-body" style="padding:32px 28px 24px;text-align:center;">
+                <div style="width:60px;height:60px;background:#fff5f5;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;font-size:24px;color:#ef4444;border:1px solid #fecaca;">
+                    <i class="bi bi-trash3-fill"></i>
+                </div>
+                <h5 style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:#1a1a1a;margin-bottom:8px;">Sipariş Silinsin mi?</h5>
+                <p style="font-size:13.5px;color:#888;margin-bottom:4px;">
+                    <strong id="deleteOrdName" style="color:#333;"></strong> siparişi kalıcı olarak silinecektir.
+                </p>
+                <p style="font-size:12.5px;color:#bbb;margin-bottom:0;">Bu işlem geri alınamaz.</p>
+            </div>
+            <div style="padding:0 28px 24px;display:flex;gap:10px;">
+                <button type="button" class="btn" data-bs-dismiss="modal" style="flex:1;border-radius:10px;border:1px solid #ebebeb;background:#fff;font-size:13.5px;font-weight:600;color:#555;padding:10px;">
+                    Vazgeç
+                </button>
+                <a id="deleteConfirmLink" href="#" class="btn" style="flex:1;border-radius:10px;background:#ef4444;color:#fff;font-size:13.5px;font-weight:600;padding:10px;text-align:center;text-decoration:none;border:none;box-shadow:0 4px 12px rgba(239,68,68,0.28);">
+                    <i class="bi bi-trash3-fill me-1"></i> Evet, Sil
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function filterOrders() {
+            const query = document.getElementById('ordSearchInput').value.toLowerCase().trim();
+            const status = document.getElementById('ordStatusFilter').value;
+            const rows = document.querySelectorAll('#ordTableBody tr');
+            let visible = 0;
+
+            rows.forEach(row => {
+                const customer = row.dataset.customer || '';
+                const table = row.dataset.table || '';
+                const rowStatus = row.dataset.status || '';
+                const textMatch = customer.includes(query) || table.includes(query);
+                const statusMatch = status === 'all' || rowStatus === status;
+
+                if (textMatch && statusMatch) {
+                    row.style.display = '';
+                    visible++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            const countEl = document.getElementById('ordResultCount');
+            if (countEl) countEl.textContent = visible + ' kayıt gösteriliyor';
+        }
+
+        function goToMonth() {
+            const month = document.getElementById('ordMonthFilter').value;
+            const year = document.getElementById('ordYearFilter').value;
+
+            let url = '/Order/OrderList?page=1';
+            if (month) url += '&month=' + month;
+            if (year) url += '&year=' + year;
+
+            window.location.href = url;
+        }
+
+        function confirmDelete(id, label) {
+            document.getElementById('deleteOrdName').textContent = label;
+            document.getElementById('deleteConfirmLink').href = '/Order/DeleteOrder/' + id;
+            const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
+            modal.show();
+        }
+    </script>
+}

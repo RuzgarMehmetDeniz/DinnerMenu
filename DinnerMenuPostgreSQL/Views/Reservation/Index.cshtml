@@ -1,0 +1,162 @@
+﻿@model DinnerMenuPostgreSQL.Dtos.ReservationDtos.CreateReservationDto
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en-US">
+    @await Component.InvokeAsync("_MenuHeadComponentPartial")
+<body class="body-header1">
+    <div class="mask-nav-2">
+        @await Component.InvokeAsync("_MenuMobileComponentPartial")
+    </div>
+    @await Component.InvokeAsync("_MenuNavbarComponentPartial")
+
+    <!-- TOP IMAGE HEADER -->
+    <section class="topSingleBkg topPageBkg">
+        <div class="item-content-bkg">
+            <div class="item-img" style="background-image:url('/dina-html/images/top-headers/menu-1col-image.jpg');"></div>
+            <div class="inner-desc">
+                <h1 class="post-title single-post-title">Rezervasyon Yapın</h1>
+                <span class="post-subtitle">Masanızı ayırtın, keyfini biz çıkaralım</span>
+            </div>
+        </div>
+    </section>
+    <!-- /TOP IMAGE HEADER -->
+    <!-- RESERVATION FORM -->
+    <section class="menu-1col-content">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8 offset-md-2">
+
+                    @if (ViewBag.ReservationSuccess == true)
+                    {
+                        <div class="reservation-success-box">
+                            <i class="fa fa-check-circle"></i>
+                            <h3>Teşekkürler!</h3>
+                            <p>Rezervasyon talebiniz alındı. En kısa sürede sizinle iletişime geçeceğiz.</p>
+                        </div>
+                    }
+
+                    <div class="categ-name">
+                        <h2>Rezervasyon Bilgileri</h2>
+                    </div>
+
+                    <form asp-controller="Reservation" asp-action="Index" method="post" class="reservation-form">
+
+                        <!-- Model ve Veritabanı Hatalarını Ekrana Basan Kısım -->
+                        <div asp-validation-summary="All" class="text-danger mb-3" style="font-weight: 600;"></div>
+
+                        <div class="row">
+                            <div class="col-md-6 form-group">
+                                <label>Ad Soyad</label>
+                                <input asp-for="Name" class="form-control" placeholder="Adınız Soyadınız" required />
+                                <span asp-validation-for="Name" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label>Telefon</label>
+                                <input asp-for="Phone" class="form-control" placeholder="05xx xxx xx xx" required />
+                                <span asp-validation-for="Phone" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <!-- Formun geri kalanı aynı kalacak... -->
+
+                        <div class="row">
+                            <div class="col-md-6 form-group">
+                                <label>E-posta</label>
+                                <input asp-for="Email" type="email" class="form-control" placeholder="ornek@mail.com" required />
+                                <span asp-validation-for="Email" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label>Kişi Sayısı</label>
+                                <input asp-for="GuestCount" type="number" min="1" class="form-control" placeholder="Kişi Sayısı" required />
+                                <span asp-validation-for="GuestCount" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 form-group">
+                                <label>Tarih</label>
+                                <input asp-for="ReservationDate" type="date" class="form-control" required />
+                                <span asp-validation-for="ReservationDate" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label>Saat</label>
+                                <input asp-for="ReservationTime" type="time" class="form-control" required />
+                                <span asp-validation-for="ReservationTime" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Notunuz (opsiyonel)</label>
+                            <textarea asp-for="Description" class="form-control" rows="4" placeholder="Özel bir isteğiniz var mı?"></textarea>
+                        </div>
+
+                        <button type="submit" class="btn-reservation-submit">
+                            <i class="fa fa-calendar-check-o"></i> Rezervasyon Talebi Gönder
+                        </button>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- /RESERVATION FORM -->
+    @await Component.InvokeAsync("_MenuFooterComponentPartial")
+    @await Component.InvokeAsync("_MenuScriptsComponentPartial")
+</body>
+</html>
+<style>
+    .reservation-form label {
+        font-family: 'Poppins', sans-serif;
+        font-size: 13px;
+        font-weight: 600;
+        color: #555;
+        margin-bottom: 6px;
+        display: block;
+    }
+
+    .reservation-form .form-group {
+        margin-bottom: 20px;
+    }
+
+    .reservation-form .form-control {
+        border-radius: 8px;
+        border: 1px solid #e5e0d8;
+        padding: 10px 14px;
+        font-family: 'Poppins', sans-serif;
+        font-size: 14px;
+    }
+
+    .btn-reservation-submit {
+        background: #2b2b2b;
+        color: #fff;
+        border: none;
+        padding: 12px 28px;
+        border-radius: 8px;
+        font-family: 'Poppins', sans-serif;
+        font-weight: 600;
+        font-size: 14px;
+        letter-spacing: 0.03em;
+        cursor: pointer;
+    }
+
+    .reservation-success-box {
+        background: #f4f8f0;
+        border: 1px solid #cfe3bd;
+        border-radius: 10px;
+        padding: 24px;
+        text-align: center;
+        margin-bottom: 28px;
+    }
+
+        .reservation-success-box i {
+            font-size: 30px;
+            color: #6ba83f;
+            margin-bottom: 8px;
+        }
+
+        .reservation-success-box h3 {
+            font-family: 'Lora', serif;
+            margin-bottom: 6px;
+        }
+</style>

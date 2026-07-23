@@ -11,6 +11,46 @@ namespace DinnerMenuPostgreSQL.Controllers
         {
             _reservationService = reservationService;
         }
+        [HttpGet]
+        public IActionResult Index()
+        {
+            return View(new CreateReservationDto());
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Index(CreateReservationDto createReservationDto)
+        {
+            // 1. Status değerini Controller tarafında "Beklemede" olarak belirle
+            createReservationDto.Status = "Beklemede";
+
+            // 2. Müşteri formunda Status girdisi olmadığı için oluşan validation hatasını temizle
+            ModelState.Remove("Status");
+
+            // 3. Validation kontrolünü hata temizlendikten SONRA yap
+            if (!ModelState.IsValid)
+            {
+                return View(createReservationDto);
+            }
+
+            try
+            {
+                // 4. PostgreSQL için UTC tarih formatı dönüşümü
+                createReservationDto.ReservationDate = DateTime.SpecifyKind(createReservationDto.ReservationDate, DateTimeKind.Utc);
+
+                // 5. Servis üzerinden veritabanına kaydet
+                await _reservationService.CreateReservationAsync(createReservationDto);
+
+                ViewBag.ReservationSuccess = true;
+
+                // Başarılı işlem sonrası boş form döndür
+                return View(new CreateReservationDto());
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", "Rezervasyon oluşturulurken bir hata oluştu: " + ex.Message);
+                return View(createReservationDto);
+            }
+        }
         public async Task<IActionResult> ReservationList()
         {
             var values = await _reservationService.GetAllReservationsAsync();

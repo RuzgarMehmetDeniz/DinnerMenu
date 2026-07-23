@@ -1,5 +1,6 @@
 ﻿using DinnerMenuPostgreSQL.Context;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace DinnerMenuPostgreSQL.Controllers
 {
@@ -11,9 +12,9 @@ namespace DinnerMenuPostgreSQL.Controllers
         {
             _context = context;
         }
-        public IActionResult Index()
+
+        public  IActionResult Index()
         {
-           ViewBag.categorycount = _context.Categories.Count();
             return View();
         }
     }
