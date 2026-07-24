@@ -26,7 +26,6 @@ namespace DinnerMenuPostgreSQL.Controllers
             );
             return View(new CreateReviewDto());
         }
-
         [HttpPost]
         public async Task<IActionResult> Index(CreateReviewDto createReviewDto)
         {
