@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DinnerMenuPostgreSQL.Controllers
 {
-
     public class CategoryController : Controller
     {
         private readonly ICategoryService _categoryService;
@@ -30,7 +29,7 @@ namespace DinnerMenuPostgreSQL.Controllers
                 return NotFound();
             }
             return View(category);
-        }
+       }
         public async Task<IActionResult> CategoryList()
         {
             var values = await _categoryService.GetAllCategoriesAsync();
