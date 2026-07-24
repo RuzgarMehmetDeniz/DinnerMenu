@@ -1,0 +1,107 @@
+﻿@model List<DinnerMenuPostgreSQL.Dtos.CategoryDtos.ResultCategoryDto>
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en-US">
+    @await Component.InvokeAsync("_MenuHeadComponentPartial")
+<body class="body-header1">
+    <div class="mask-nav-2">
+        @await Component.InvokeAsync("_MenuMobileComponentPartial")
+    </div>
+    @await Component.InvokeAsync("_MenuNavbarComponentPartial")
+
+    <!-- TOP IMAGE HEADER -->
+    <section class="topSingleBkg topPageBkg">
+        <div class="item-content-bkg">
+            <div class="item-img" style="background-image:url('/dina-html/images/top-headers/menu-1col-image.jpg');"></div>
+            <div class="inner-desc">
+                <h1 class="post-title single-post-title">Kategoriler</h1>
+                <span class="post-subtitle">Aradığınız lezzete kategorilerden ulaşın</span>
+            </div>
+        </div>
+    </section>
+    <!-- /TOP IMAGE HEADER -->
+    <!-- CATEGORY GRID -->
+    <section class="menu-1col-content">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-10 offset-md-1">
+                    <div class="category-grid">
+                        @foreach (var category in Model)
+                        {
+                            <a href="/Category/Detail/@category.CategoryId" class="category-card">
+                                <div class="category-card-img" style="background-image:url('@category.CategoryImageUrl');"></div>
+                                <div class="category-card-overlay"></div>
+                                <h3 class="category-card-title">@category.CategoryName</h3>
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- /CATEGORY GRID -->
+    @await Component.InvokeAsync("_MenuFooterComponentPartial")
+    @await Component.InvokeAsync("_MenuScriptsComponentPartial")
+</body>
+</html>
+
+<style>
+    .category-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+    }
+
+    .category-card {
+        position: relative;
+        display: block;
+        height: 220px;
+        border-radius: 12px;
+        overflow: hidden;
+        text-decoration: none;
+        box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+        transition: transform 0.25s ease;
+    }
+
+        .category-card:hover {
+            transform: translateY(-4px);
+        }
+
+    .category-card-img {
+        position: absolute;
+        inset: 0;
+        background-size: cover;
+        background-position: center;
+        transition: transform 0.4s ease;
+    }
+
+    .category-card:hover .category-card-img {
+        transform: scale(1.06);
+    }
+
+    .category-card-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to top, rgba(0,0,0,0.55), rgba(0,0,0,0.05));
+    }
+
+    .category-card-title {
+        position: absolute;
+        bottom: 18px;
+        left: 20px;
+        margin: 0;
+        color: #fff;
+        font-family: 'Lora', serif;
+        font-size: 20px;
+        font-weight: 700;
+        z-index: 2;
+    }
+
+    @@media (max-width: 767.98px) {
+        .category-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>

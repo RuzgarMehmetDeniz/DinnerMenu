@@ -1,4 +1,5 @@
 ﻿using DinnerMenuPostgreSQL.Dtos.CategoryDtos;
+using DinnerMenuPostgreSQL.Entities;
 
 namespace DinnerMenuPostgreSQL.Service.CategoryServices
 {
@@ -9,5 +10,7 @@ namespace DinnerMenuPostgreSQL.Service.CategoryServices
         Task CreateCategoryAsync(CreateCategoryDto createCategoryDto);
         Task UpdateCategoryAsync(UpdateCategoryDto updateCategoryDto);
         Task DeleteCategoryAsync(int id);
+        Task<Category> GetCategoryWithProductsAsync(int id);
+
     }
 }

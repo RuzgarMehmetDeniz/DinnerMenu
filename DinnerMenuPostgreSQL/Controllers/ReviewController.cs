@@ -16,7 +16,42 @@ namespace DinnerMenuPostgreSQL.Controllers
             _reviewService = reviewService;
             _context = context;
         }
+        // ── MÜŞTERİ TARAFI: Yorum Yazma Sayfası ──
+        [HttpGet]
+        public async Task<IActionResult> Index()
+        {
+            ViewBag.Products = new SelectList(
+                await _context.Products.Where(p => p.Status).ToListAsync(),
+                "ProductId", "ProductName"
+            );
+            return View(new CreateReviewDto());
+        }
 
+        [HttpPost]
+        public async Task<IActionResult> Index(CreateReviewDto createReviewDto)
+        {
+            if (!ModelState.IsValid || createReviewDto.Rating < 1 || createReviewDto.Rating > 5)
+            {
+                ViewBag.Products = new SelectList(
+                    await _context.Products.Where(p => p.Status).ToListAsync(),
+                    "ProductId", "ProductName"
+                );
+                ViewBag.ReviewError = true;
+                return View(createReviewDto);
+            }
+
+            createReviewDto.CreatedAt = DateTime.SpecifyKind(DateTime.Now, DateTimeKind.Utc);
+            createReviewDto.Status = false; // admin onayı bekliyor
+
+            await _reviewService.CreateReviewAsync(createReviewDto);
+
+            ViewBag.ReviewSuccess = true;
+            ViewBag.Products = new SelectList(
+                await _context.Products.Where(p => p.Status).ToListAsync(),
+                "ProductId", "ProductName"
+            );
+            return View(new CreateReviewDto());
+        }
         // ── LİSTE ──
         public async Task<IActionResult> ReviewList()
         {

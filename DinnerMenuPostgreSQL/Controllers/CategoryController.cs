@@ -11,6 +11,24 @@ namespace DinnerMenuPostgreSQL.Controllers
         {
             _categoryService = categoryService;
         }
+        // Müşteri tarafı - tüm aktif kategorileri kart olarak listeler
+        public async Task<IActionResult> Index()
+        {
+            var values = await _categoryService.GetAllCategoriesAsync();
+            var activeValues = values.Where(c => c.CategoryStatus).ToList();
+            return View(activeValues);
+        }
+
+        // Müşteri tarafı - seçilen kategorinin ürünlerini gösterir
+        public async Task<IActionResult> Detail(int id)
+        {
+            var category = await _categoryService.GetCategoryWithProductsAsync(id);
+            if (category == null)
+            {
+                return NotFound();
+            }
+            return View(category);
+        }
         public async Task<IActionResult> CategoryList()
         {
             var values = await _categoryService.GetAllCategoriesAsync();

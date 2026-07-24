@@ -1,0 +1,188 @@
+﻿@model DinnerMenuPostgreSQL.Dtos.ReviewDtos.CreateReviewDto
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en-US">
+    @await Component.InvokeAsync("_MenuHeadComponentPartial")
+<body class="body-header1">
+    <div class="mask-nav-2">
+        @await Component.InvokeAsync("_MenuMobileComponentPartial")
+    </div>
+    @await Component.InvokeAsync("_MenuNavbarComponentPartial")
+
+    <!-- TOP IMAGE HEADER -->
+    <section class="topSingleBkg topPageBkg">
+        <div class="item-content-bkg">
+            <div class="item-img" style="background-image:url('/dina-html/images/top-headers/menu-1col-image.jpg');"></div>
+            <div class="inner-desc">
+                <h1 class="post-title single-post-title">Yorum Yapın</h1>
+                <span class="post-subtitle">Deneyiminizi bizimle paylaşın</span>
+            </div>
+        </div>
+    </section>
+    <!-- /TOP IMAGE HEADER -->
+    <!-- REVIEW FORM -->
+    <section class="menu-1col-content">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8 offset-md-2">
+
+                    @if (ViewBag.ReviewSuccess == true)
+                    {
+                        <div class="review-success-box">
+                            <i class="fa fa-check-circle"></i>
+                            <h3>Teşekkürler!</h3>
+                            <p>Yorumunuz alındı. Admin onayından sonra yayınlanacaktır.</p>
+                        </div>
+                    }
+
+                    @if (ViewBag.ReviewError == true)
+                    {
+                        <div class="review-error-box">
+                            <i class="fa fa-exclamation-circle"></i>
+                            Lütfen tüm alanları doldurun ve 1-5 arası bir puan seçin.
+                        </div>
+                    }
+
+                    <div class="categ-name">
+                        <h2>Yorumunuzu Bırakın</h2>
+                    </div>
+
+                    <form asp-controller="Review" asp-action="Index" method="post" class="review-form">
+                        <div class="form-group">
+                            <label>Ürün</label>
+                            <select asp-for="ProductId" asp-items="ViewBag.Products" class="form-control" required>
+                                <option value="">Ürün Seçin</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Adınız</label>
+                            <input asp-for="CustomerName" class="form-control" placeholder="Adınız Soyadınız" required />
+                        </div>
+
+                        <div class="form-group">
+                            <label>Puanınız</label>
+                            <div class="star-rating">
+                                @for (int s = 5; s >= 1; s--)
+                                {
+                                    <input type="radio" id="star@(s)" name="Rating" value="@s" @(Model.Rating == s ? "checked" : "") />
+                                    <label for="star@(s)"><i class="fa fa-star"></i></label>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Yorumunuz</label>
+                            <textarea asp-for="Comment" class="form-control" rows="4" placeholder="Deneyiminizi anlatın..." required></textarea>
+                        </div>
+
+                        <button type="submit" class="btn-review-submit">
+                            <i class="fa fa-paper-plane"></i> Yorumu Gönder
+                        </button>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- /REVIEW FORM -->
+    @await Component.InvokeAsync("_MenuFooterComponentPartial")
+    @await Component.InvokeAsync("_MenuScriptsComponentPartial")
+</body>
+</html>
+
+<style>
+    .review-form label {
+        font-family: 'Poppins', sans-serif;
+        font-size: 13px;
+        font-weight: 600;
+        color: #555;
+        margin-bottom: 6px;
+        display: block;
+    }
+
+    .review-form .form-group {
+        margin-bottom: 20px;
+    }
+
+    .review-form .form-control {
+        border-radius: 8px;
+        border: 1px solid #e5e0d8;
+        padding: 10px 14px;
+        font-family: 'Poppins', sans-serif;
+        font-size: 14px;
+        width: 100%;
+    }
+
+    .btn-review-submit {
+        background: #2b2b2b;
+        color: #fff;
+        border: none;
+        padding: 12px 28px;
+        border-radius: 8px;
+        font-family: 'Poppins', sans-serif;
+        font-weight: 600;
+        font-size: 14px;
+        letter-spacing: 0.03em;
+        cursor: pointer;
+    }
+
+    /* Star rating - CSS trick: radio'lar ters sırada (5→1), label'lar da flex-direction: row-reverse ile ~hover mantığını sağlıyor */
+    .star-rating {
+        display: flex;
+        flex-direction: row-reverse;
+        justify-content: flex-end;
+        gap: 4px;
+    }
+
+        .star-rating input {
+            display: none;
+        }
+
+        .star-rating label {
+            font-size: 26px;
+            color: #ddd;
+            cursor: pointer;
+            transition: color 0.15s ease;
+            margin: 0;
+        }
+
+            .star-rating input:checked ~ label,
+            .star-rating label:hover,
+            .star-rating label:hover ~ label {
+                color: #e6a03c;
+            }
+
+    .review-success-box {
+        background: #f4f8f0;
+        border: 1px solid #cfe3bd;
+        border-radius: 10px;
+        padding: 24px;
+        text-align: center;
+        margin-bottom: 28px;
+    }
+
+        .review-success-box i {
+            font-size: 30px;
+            color: #6ba83f;
+            margin-bottom: 8px;
+        }
+
+        .review-success-box h3 {
+            font-family: 'Lora', serif;
+            margin-bottom: 6px;
+        }
+
+    .review-error-box {
+        background: #fdf3f3;
+        border: 1px solid #f0c4c4;
+        color: #b03a3a;
+        border-radius: 8px;
+        padding: 14px 18px;
+        margin-bottom: 24px;
+        font-family: 'Poppins', sans-serif;
+        font-size: 13.5px;
+    }
+</style>

@@ -43,5 +43,11 @@ namespace DinnerMenuPostgreSQL.Service.CategoryServices
             _context.Categories.Update(value);
             await _context.SaveChangesAsync();
         }
+        public async Task<Category> GetCategoryWithProductsAsync(int id)
+        {
+            return await _context.Categories
+                .Include(c => c.Products)
+                .FirstOrDefaultAsync(c => c.CategoryId == id && c.CategoryStatus);
+        }
     }
 }
