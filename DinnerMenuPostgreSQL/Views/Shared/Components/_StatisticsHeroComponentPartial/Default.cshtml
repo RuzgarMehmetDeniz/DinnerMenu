@@ -13,7 +13,7 @@
 
     <div class="hero-stat"><div class="hero-stat-num">@ViewBag.totalCustomerCount</div><div class="hero-stat-lbl">Kayıtlı Müşteri</div><div class="hero-stat-sub">Bu hafta + @ViewBag.thisWeekTotalGuestCount yeni</div></div>
 
-    <div class="hero-stat"><div class="hero-stat-num ac">@ViewBag.avgScore</div><div class="hero-stat-lbl">Ortalama Puan</div><div class="hero-stat-sub">@ViewBag.totalReviewCount değerlendirme</div></div>
+    <div class="hero-stat"><div class="hero-stat-num ac">@ViewBag.avgScore.ToString("F1")</div><div class="hero-stat-lbl">Ortalama Puan</div><div class="hero-stat-sub">@ViewBag.totalReviewCount değerlendirme</div></div>
 
     <div class="hero-stat"><div class="hero-stat-num">@ViewBag.activeProduct</div><div class="hero-stat-lbl">Aktif Ürün</div><div class="hero-stat-sub">@ViewBag.categoryCount kategoride</div></div>
 </div>

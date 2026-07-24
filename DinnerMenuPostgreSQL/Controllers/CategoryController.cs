@@ -1,9 +1,11 @@
 ﻿using DinnerMenuPostgreSQL.Dtos.CategoryDtos;
 using DinnerMenuPostgreSQL.Service.CategoryServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DinnerMenuPostgreSQL.Controllers
 {
+
     public class CategoryController : Controller
     {
         private readonly ICategoryService _categoryService;

@@ -1,0 +1,75 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+    @await Component.InvokeAsync("_MenuHeadComponentPartial")
+<body class="body-header1">
+    <div class="mask-nav-2">
+        @await Component.InvokeAsync("_MenuMobileComponentPartial")
+    </div>
+    @await Component.InvokeAsync("_MenuNavbarComponentPartial")
+
+    <!-- Sayfa Üst Banner -->
+    <section class="topSingleBkg topPageBkg">
+        <div class="item-content-bkg">
+            <div class="item-img" style="background-image:url('/dina-html/images/top-headers/menu-1col-image.jpg');"></div>
+            <div class="inner-desc">
+                <h1 class="post-title single-post-title">Yetkisiz Erişim</h1>
+                <span class="post-subtitle">Bu bölüme erişim izniniz bulunmamaktadır</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Erişim Engellendi Kart Alanı -->
+    <section class="menu-1col-content" style="padding: 80px 0; background-color: #fcfcfc;">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-6 col-md-8 col-sm-10">
+
+                    <div style="background: #ffffff; padding: 50px 40px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08); border: 1px solid #eee; text-align: center;">
+
+                        <!-- İkon Alanı -->
+                        <div style="width: 80px; height: 80px; background-color: #fdf2f2; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 25px auto;">
+                            <span style="font-size: 38px; color: #de5246;">🔒</span>
+                        </div>
+
+                        <!-- Başlık ve Metin -->
+                        <h2 style="font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 700; color: #1a1a1a; margin-bottom: 15px;">
+                            Üzgünüz, Burası Özel Alan!
+                        </h2>
+
+                        <p style="font-size: 15px; color: #666; line-height: 1.6; margin-bottom: 30px;">
+                            Görüntülemeye çalıştığınız sayfa yalnızca yetkili personelimiz içindir.
+                            Eğer bir yanlışlık olduğunu düşünüyorsanız lütfen hesabınızla tekrar giriş yapın veya yönetici ile iletişime geçin.
+                        </p>
+
+                        <!-- Buton Grubu -->
+                        <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                            <a href="/Menu/Index"
+                               style="display: inline-block; padding: 12px 28px; background-color: #c19d60; color: #ffffff; border-radius: 6px; font-weight: 600; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; text-decoration: none; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(193, 157, 96, 0.3);"
+                               onmouseover="this.style.backgroundColor='#a88548'"
+                               onmouseout="this.style.backgroundColor='#c19d60'">
+                                Menüye Dön
+                            </a>
+
+                            <a href="/Account/Login"
+                               style="display: inline-block; padding: 12px 28px; background-color: transparent; color: #1a1a1a; border: 1px solid #1a1a1a; border-radius: 6px; font-weight: 600; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; text-decoration: none; transition: all 0.3s ease;"
+                               onmouseover="this.style.backgroundColor='#1a1a1a'; this.style.color='#fff';"
+                               onmouseout="this.style.backgroundColor='transparent'; this.style.color='#1a1a1a';">
+                                Farklı Hesapla Giriş Yap
+                            </a>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+    @await Component.InvokeAsync("_MenuFooterComponentPartial")
+    @await Component.InvokeAsync("_MenuScriptsComponentPartial")
+</body>
+</html>

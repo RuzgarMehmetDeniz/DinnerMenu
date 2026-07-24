@@ -1,0 +1,115 @@
+﻿@model DinnerMenuPostgreSQL.Dtos.AccountDtos.RegisterViewModel
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en-US">
+    @await Component.InvokeAsync("_MenuHeadComponentPartial")
+<body class="body-header1">
+    <div class="mask-nav-2">
+        @await Component.InvokeAsync("_MenuMobileComponentPartial")
+    </div>
+    @await Component.InvokeAsync("_MenuNavbarComponentPartial")
+
+    <section class="topSingleBkg topPageBkg">
+        <div class="item-content-bkg">
+            <div class="item-img" style="background-image:url('/dina-html/images/top-headers/menu-1col-image.jpg');"></div>
+            <div class="inner-desc">
+                <h1 class="post-title single-post-title">Kayıt Ol</h1>
+                <span class="post-subtitle">Aramıza katılın ve özel ayrıcalıklardan yararlanın</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modern Kayıt Ol Alanı -->
+    <section class="menu-1col-content" style="padding: 60px 0; background-color: #fcfcfc;">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-6 col-md-8 col-sm-10">
+
+                    <div style="background: #ffffff; padding: 40px 35px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08); border: 1px solid #eee;">
+
+                        <div style="text-align: center; margin-bottom: 25px;">
+                            <h3 style="font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 700; color: #1a1a1a; margin-bottom: 5px;">Hesap Oluştur</h3>
+                            <p style="font-size: 14px; color: #777;">Lütfen kayıt bilgilerinizi eksiksiz doldurunuz</p>
+                        </div>
+
+                        @if (!ViewData.ModelState.IsValid)
+                        {
+                            <div style="background-color: #fdf2f2; border-left: 4px solid #de5246; color: #9f3a38; padding: 12px 15px; border-radius: 6px; font-size: 13.5px; margin-bottom: 20px;">
+                                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                                {
+                                    <div style="display: flex; align-items: center; gap: 6px;">
+                                        <span style="font-weight: bold;">•</span> @error.ErrorMessage
+                                    </div>
+                                }
+                            </div>
+                        }
+
+                        <form asp-controller="Account" asp-action="Register" method="post" class="review-form">
+
+                            <!-- Ad ve Soyad Yan Yana -->
+                            <div class="row">
+                                <div class="col-md-6 form-group" style="margin-bottom: 20px;">
+                                    <label style="font-weight: 600; font-size: 13px; color: #333; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; display: block;">Adınız</label>
+                                    <input asp-for="FirstName" class="form-control" placeholder="Ahmet" required
+                                           style="height: 48px; border-radius: 6px; border: 1px solid #e0e0e0; padding: 10px 15px; font-size: 14px; transition: all 0.3s ease; width: 100%;" />
+                                </div>
+                                <div class="col-md-6 form-group" style="margin-bottom: 20px;">
+                                    <label style="font-weight: 600; font-size: 13px; color: #333; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; display: block;">Soyadınız</label>
+                                    <input asp-for="LastName" class="form-control" placeholder="Yılmaz" required
+                                           style="height: 48px; border-radius: 6px; border: 1px solid #e0e0e0; padding: 10px 15px; font-size: 14px; transition: all 0.3s ease; width: 100%;" />
+                                </div>
+                            </div>
+
+                            <!-- E-posta -->
+                            <div class="form-group" style="margin-bottom: 20px;">
+                                <label style="font-weight: 600; font-size: 13px; color: #333; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; display: block;">E-Posta Adresi</label>
+                                <input asp-for="Email" type="email" class="form-control" placeholder="ornek@mail.com" required
+                                       style="height: 48px; border-radius: 6px; border: 1px solid #e0e0e0; padding: 10px 15px; font-size: 14px; transition: all 0.3s ease; width: 100%;" />
+                            </div>
+
+                            <!-- Şifre ve Şifre Tekrarı Yan Yana -->
+                            <div class="row">
+                                <div class="col-md-6 form-group" style="margin-bottom: 25px;">
+                                    <label style="font-weight: 600; font-size: 13px; color: #333; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; display: block;">Şifre</label>
+                                    <input asp-for="Password" type="password" class="form-control" placeholder="••••••••" required
+                                           style="height: 48px; border-radius: 6px; border: 1px solid #e0e0e0; padding: 10px 15px; font-size: 14px; transition: all 0.3s ease; width: 100%;" />
+                                </div>
+                                <div class="col-md-6 form-group" style="margin-bottom: 25px;">
+                                    <label style="font-weight: 600; font-size: 13px; color: #333; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; display: block;">Şifre Tekrarı</label>
+                                    <input asp-for="ConfirmPassword" type="password" class="form-control" placeholder="••••••••" required
+                                           style="height: 48px; border-radius: 6px; border: 1px solid #e0e0e0; padding: 10px 15px; font-size: 14px; transition: all 0.3s ease; width: 100%;" />
+                                </div>
+                            </div>
+
+                            <button type="submit"
+                                    style="width: 100%; height: 50px; background-color: #c19d60; color: #fff; border: none; border-radius: 6px; font-weight: 600; font-size: 15px; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: background 0.3s ease; box-shadow: 0 4px 12px rgba(193, 157, 96, 0.3);"
+                                    onmouseover="this.style.backgroundColor='#a88548'"
+                                    onmouseout="this.style.backgroundColor='#c19d60'">
+                                Kayıt Ol
+                            </button>
+                        </form>
+
+                        <div style="text-align: center; margin-top: 25px; padding-top: 20px; border-top: 1px solid #f0f0f0;">
+                            <p style="font-size: 14px; color: #666; margin: 0;">
+                                Zaten bir hesabınız var mı?
+                                <a href="/Account/Login" style="color: #c19d60; font-weight: 600; text-decoration: none; margin-left: 5px;"
+                                   onmouseover="this.style.textDecoration='underline'"
+                                   onmouseout="this.style.textDecoration='none'">
+                                    Giriş Yapın
+                                </a>
+                            </p>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+    @await Component.InvokeAsync("_MenuFooterComponentPartial")
+    @await Component.InvokeAsync("_MenuScriptsComponentPartial")
+</body>
+</html>

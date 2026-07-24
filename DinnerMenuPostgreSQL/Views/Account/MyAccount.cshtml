@@ -1,0 +1,72 @@
+﻿@{
+    Layout = null;
+    var reservations = ViewBag.Reservations as List<DinnerMenuPostgreSQL.Entities.Reservation>;
+    var reviews = ViewBag.Reviews as List<DinnerMenuPostgreSQL.Entities.Review>;
+}
+<!DOCTYPE html>
+<html lang="en-US">
+    @await Component.InvokeAsync("_MenuHeadComponentPartial")
+<body class="body-header1">
+    <div class="mask-nav-2">@await Component.InvokeAsync("_MenuMobileComponentPartial")</div>
+    @await Component.InvokeAsync("_MenuNavbarComponentPartial")
+
+    <section class="topSingleBkg topPageBkg">
+        <div class="item-content-bkg">
+            <div class="item-img" style="background-image:url('/dina-html/images/top-headers/menu-1col-image.jpg');"></div>
+            <div class="inner-desc">
+                <h1 class="post-title single-post-title">Hesabım</h1>
+                <span class="post-subtitle">Rezervasyonlarınız ve yorumlarınız</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="menu-1col-content">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-10 offset-md-1">
+
+                    <div class="categ-name"><h2>Rezervasyonlarım</h2></div>
+                    @if (reservations == null || !reservations.Any())
+                    {
+                        <p>Henüz rezervasyonunuz yok.</p>
+                    }
+                    else
+                    {
+                        @foreach (var r in reservations)
+                        {
+                            <div class="menu-post clearfix">
+                                <div class="menu-post-desc">
+                                    <h4><span class="menu-title">@r.ReservationDate.ToString("dd.MM.yyyy") - @r.ReservationTime</span></h4>
+                                    <div class="menu-text">@r.GuestCount kişi — Durum: @r.Status</div>
+                                </div>
+                            </div>
+                        }
+                    }
+
+                    <div class="categ-name" style="margin-top:30px;"><h2>Yorumlarım</h2></div>
+                    @if (reviews == null || !reviews.Any())
+                    {
+                        <p>Henüz yorumunuz yok.</p>
+                    }
+                    else
+                    {
+                        @foreach (var rv in reviews)
+                        {
+                            <div class="menu-post clearfix">
+                                <div class="menu-post-desc">
+                                    <h4><span class="menu-title">@rv.Product?.ProductName</span> <span class="menu-price">@rv.Rating/5</span></h4>
+                                    <div class="menu-text">@rv.Comment — @(rv.Status ? "Yayında" : "Onay bekliyor")</div>
+                                </div>
+                            </div>
+                        }
+                    }
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+    @await Component.InvokeAsync("_MenuFooterComponentPartial")
+    @await Component.InvokeAsync("_MenuScriptsComponentPartial")
+</body>
+</html>
